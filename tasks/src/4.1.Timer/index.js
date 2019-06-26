@@ -15,6 +15,7 @@ class Timer extends React.Component {
     super();
     this.state = { timeVisible: true };
   }
+  
 
   render() {
     const { timeVisible } = this.state;
@@ -40,12 +41,22 @@ class TimeDisplay extends React.Component {
     this.state = {
       localTime: new Date()
     };
+    this.timerId = null;
   }
-
+  componentDidMount() {
+    this.timerId = setInterval(this.changeTime, 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.timerId);
+  }
   render() {
     return (
       <div className="time">{this.state.localTime.toLocaleTimeString()}</div>
     );
+  }
+  changeTime = () => {
+    this.setState({localTime: new Date()});
+    console.log('tick');
   }
 }
 
