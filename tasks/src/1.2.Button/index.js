@@ -6,12 +6,21 @@ import './styles.css';
     Напиши обработчик нажатия на кнопку.
     При нажатии должно выводиться диалоговое окно с сообщением «Отправлено».
  */
+function handleOnClick (event) {
+  console.log(event);
+  alert("Отправлено");
+}
 
 ReactDom.render(
   <div className="root">
     <div className="form">
       <div style={{ marginBottom: '10px' }}>Нажми отправить</div>
-      <input type="button" className="button" value="Отправить" />
+      <input 
+        type="button"
+        className="button"
+        value="Отправить"
+        onClick={handleOnClick}
+      />
     </div>
   </div>,
   document.getElementById('app')
