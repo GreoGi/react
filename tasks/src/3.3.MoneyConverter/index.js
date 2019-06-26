@@ -1,7 +1,7 @@
-import React from 'react';
-import ReactDom from 'react-dom';
-import PropTypes from 'prop-types';
-import './styles.css';
+import React from "react";
+import ReactDom from "react-dom";
+import PropTypes from "prop-types";
+import "./styles.css";
 
 /**
     Допиши конвертер валют.
@@ -9,9 +9,42 @@ import './styles.css';
     - Если пользователь ввел значение в евро, то количество рублей обновляется согласно курсу
  */
 
-const RUBLES_IN_ONE_EURO = 70;
+// const RUBLES_IN_ONE_EURO = 70;
 
 class MoneyConverter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.RUBLES_IN_ONE_EURO = 70;
+    this.state = {
+      ruble: "0",
+      euro: "0"
+    };
+  }
+  
+  // Mama Mia! Mario, Валюта в центробанке!
+  componentDidMount() {
+    fetch("https://www.cbr-xml-daily.ru/daily_json.js", {
+      // credentials: "include",
+      body: null,
+      method: "GET",
+      mode: "cors"
+    })
+      .then(response => {
+        if (response.status === 200) {
+          return response.json();
+        }
+        throw new Error(
+          "Не могу получить курс валют с центробанка, беру 70 р в евро!"
+        );
+      })
+      .then(data => {
+        this.RUBLES_IN_ONE_EURO = data.Valute.EUR.Value;
+        console.log(this.RUBLES_IN_ONE_EURO);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
   render() {
     return (
       <div className="root">
@@ -19,50 +52,69 @@ class MoneyConverter extends React.Component {
           <h2>Конвертер валют</h2>
           <div>
             <span>&#8381;</span>
-            <Money />
+            <Money
+              value={this.state.ruble}
+              onChange={this.handleChangeRuble}
+              onBlur={this.handleOnBlur}
+            />
             &mdash;
-            <Money />
+            <Money
+              value={this.state.euro}
+              onChange={this.handleChangeEuro}
+              onBlur={this.handleOnBlur}
+            />
             <span>&euro;</span>
           </div>
         </div>
       </div>
     );
   }
-}
-
-class Money extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: 0
-    };
-  }
-
-  render() {
-    return (
-      <input
-        type="text"
-        value={this.state.value}
-        onChange={this.handleChangeValue}
-      />
-    );
-  }
-
-  handleChangeValue = event => {
-    const value = extractNumberString(event.target.value);
-    this.setState({ value });
+  handleChangeRuble = event => {
+    const ruble = extractNumberString(event.target.value);
+    this.setState({
+      ruble: ruble,
+      euro: String(ruble / this.RUBLES_IN_ONE_EURO)
+    });
+  };
+  handleChangeEuro = event => {
+    const euro = extractNumberString(event.target.value);
+    this.setState({
+      ruble: String(euro * this.RUBLES_IN_ONE_EURO),
+      euro: euro
+    });
+  };
+  handleOnBlur = event => {
+    this.setState({
+      ruble: Number(this.state.ruble).toFixed(2),
+      euro: Number(this.state.euro).toFixed(2)
+    });
   };
 }
 
-Money.propTypes = {};
-
-function extractNumberString(value) {
-  const str = value.replace(/^0+/g, '').replace(/[^\.0-9]/g, '');
-  const parts = str.split('.');
-  return parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : str;
+function Money(props) {
+  return (
+    <input
+      type="text"
+      value={props.value}
+      onChange={props.onChange}
+      onBlur={props.onBlur}
+    />
+  );
 }
 
-ReactDom.render(<MoneyConverter />, document.getElementById('app'));
+Money.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+  onBlur: PropTypes.func
+};
+
+function extractNumberString(value) {
+  const str = value.replace(/^0+/g, "").replace(/[^\.0-9]/g, "");
+  const parts = str.split(".");
+  return parts.length > 2 ? parts[0] + "." + parts.slice(1).join("") : str;
+}
+
+ReactDom.render(<MoneyConverter />, document.getElementById("app"));
 
 /**
     Подсказки:
