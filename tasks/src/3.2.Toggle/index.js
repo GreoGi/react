@@ -11,14 +11,17 @@ import './toggle.css';
  */
 
 class Toggle extends React.Component {
-  // constructor(props) {
-  // }
+  constructor(props) {
+    super(props);
+    this.state = {
+      checked: true
+    }
+  }
 
   render() {
-    const checked = true;
     return (
       <span
-        className={'container' + (checked ? ' isChecked' : '')}
+        className={'container' + (this.state.checked ? ' isChecked' : '')}
         onClick={this.handleClick}
       >
         <span className="handle">
@@ -29,7 +32,14 @@ class Toggle extends React.Component {
     );
   }
 
-  handleClick = () => {};
+  handleClick = () => {
+    const newCheck = !this.state.checked;
+    // console.log(newCheck);
+    this.setState({checked: newCheck});
+    if(this.props.onChange) {
+      this.props.onChange(newCheck);
+    }
+  };
 }
 
 Toggle.propTypes = {
