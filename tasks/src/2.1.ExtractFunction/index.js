@@ -1,6 +1,6 @@
-import React from 'react';
-import ReactDom from 'react-dom';
-import './styles.css';
+import React from "react";
+import ReactDom from "react-dom";
+import "./styles.css";
 
 /**
      Выдели метод отрисовки лота (renderLot), метод отрисовки поста (renderPost) и используй их.
@@ -35,7 +35,7 @@ ReactDom.render(
       {renderPost("Милая девушка", "3 часа назад", "Можно использовать для выпекания чизкейков :)")}
     </div>
   </div>,
-  document.getElementById('app')
+  document.getElementById("app")
 );
 
 /**
